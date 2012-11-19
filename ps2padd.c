@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 	setupNet(connptr);
 	
 	strncpy(data, "Ps2PaD++SRV-PONG", 16);
-	data[16]="\0";
+	
 	udp_send(connptr,data,16);
 
 	scr_printf("WE FUCKING SET UP NETWORK \n");

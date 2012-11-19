@@ -12,12 +12,14 @@ uint8_t     recvbuffer[1024] __attribute__((aligned (64))); //will be sent thru 
 uint8_t     sendbuffer[1024] __attribute__((aligned (64)));
 int     lastpacketlength;
 
-
 typedef struct udp_pkg udp_pkg;
-void arp_clean(void);
-udp_pkg  *udp_pre_pkg;
+typedef struct arp_entry arp_entry;
 
-// functions-include.h
+void arp_clean(void);
+
+udp_pkg  *udp_pre_pkg; // GLOBAL VARIABLE THAT HOLDS DEFAULT VALUES
+
+
 unsigned int itol(char* ip) {
     //convert IP address string into an unsigned long
     unsigned long r;
@@ -185,7 +187,7 @@ int udp_prefill(unsigned int ps2ip, union mac ps2_ethaddr) {
 /* udp_connect prefills a udp_pkg */
 
 int udp_connect(udp_pkg *defconptr, unsigned int destip, unsigned short dstport) {
-    memcpy(defconptr, udp_pre_pkg, sizeof(struct udp_pkg));
+    memcpy(defconptr, udp_pre_pkg, sizeof(udp_pkg));
     
     if (!arp_lookup(destip, defconptr->eth_hdr.EthDst))
     	return ERR_ARP_NOT_IN_TABLE;
@@ -198,28 +200,28 @@ int udp_connect(udp_pkg *defconptr, unsigned int destip, unsigned short dstport)
 int udp_send(udp_pkg *defconptr, void *databuf, unsigned short len) {
     udp_pkg *udp_packet;
     udp_packet = (udp_pkg*) sendbuffer;
-    memcpy(udp_packet, defconptr, sizeof(struct udp_pkg));
+    memcpy(udp_packet, defconptr, sizeof(udp_pkg));
     udp_packet->ip_hdr.TotalLength = htons(
     		sizeof(struct udp_pkg) + len - sizeof(struct eth_hdr));
     udp_packet->ip_hdr.HeaderChecksum = ip_chksum(&udp_packet->ip_hdr.Version);
     udp_packet->udp_hdr.Length = htons(len + 8);
-    memcpy(sendbuffer + sizeof(struct udp_pkg), databuf, len);
+    memcpy(sendbuffer + sizeof(udp_pkg), databuf, len);
+    net_send(sendbuffer, (sizeof(udp_pkg) + len));
     return 1;
-    net_send(sendbuffer, (sizeof(struct udp_pkg) + len));
-}
+    }
 
-int udp_sendto(void * databuf, unsigned short len, unsigned int destip, unsigned short dstport, unsigned short srcport) {
+int udp_sendto(void *databuf, unsigned short len, unsigned int destip, unsigned short dstport, unsigned short srcport) {
     udp_pkg *udp_packet;
-    udp_packet = (struct udp_pkg *) sendbuffer;
+    udp_packet = (udp_pkg*) sendbuffer;
     if (udp_connect(udp_packet, destip, dstport) > 0) {
     	udp_packet->ip_hdr.TotalLength = htons(
-    			sizeof(struct udp_pkg) + len - sizeof(struct eth_hdr));
+    			sizeof(udp_pkg) + len - sizeof(struct eth_hdr));
     	udp_packet->ip_hdr.HeaderChecksum = ip_chksum(
     			&udp_packet->ip_hdr.Version);
     	udp_packet->udp_hdr.Length = htons(len + 8);
     	udp_packet->udp_hdr.UDPDstPort = dstport;
-    	memcpy(sendbuffer + sizeof(struct udp_pkg), databuf, len);
-    	net_send(sendbuffer, (sizeof(struct udp_pkg) + len));
+    	memcpy(sendbuffer + sizeof(udp_pkg), databuf, len);
+    	net_send(sendbuffer, (sizeof(udp_pkg) + len));
     	return 1;
     }
     return ERR_ARP_NOT_IN_TABLE;
@@ -231,11 +233,10 @@ int udp_recv(void *databuf, unsigned short dstport) {
     while (1) {
     	rv = get_packet();
     	if (rv > 0) {
-    		udp_packet = (struct udp_pkg *) recvbuffer;
+    		udp_packet = (udp_pkg*) recvbuffer;
     		if (udp_packet->udp_hdr.UDPDstPort == htons(dstport)) {
     			memcpy(databuf, recvbuffer + sizeof(struct udp_pkg),
-    					ntohs(udp_packet->udp_hdr.Length)
-    							- sizeof(struct udp_hdr));
+    			ntohs(udp_packet->udp_hdr.Length)-sizeof(struct udp_hdr));
     			return (htons(
     					ntohs(udp_packet->udp_hdr.Length)
     							- sizeof(struct udp_hdr)));
@@ -245,13 +246,13 @@ int udp_recv(void *databuf, unsigned short dstport) {
     return 0;
 }
 
-int udp_recvfrom(udp_pkg * defconptr, void * databuf, unsigned short dstport) {
+int udp_recvfrom(udp_pkg *defconptr, void *databuf, unsigned short dstport) {
     udp_pkg *udp_packet;
     int rv = -1;
     while (1) {
     	rv = get_packet();
     	if (rv > 0) {
-    		udp_packet = (struct udp_pkg *) recvbuffer;
+    		udp_packet = (udp_pkg*) recvbuffer;
     		dstport = ntohs(dstport);
     		if (udp_packet->udp_hdr.UDPDstPort == dstport) {
     			memcpy(databuf, recvbuffer + sizeof(struct udp_pkg),
@@ -261,7 +262,7 @@ int udp_recvfrom(udp_pkg * defconptr, void * databuf, unsigned short dstport) {
     					udp_packet->eth_hdr.EthSrc);
     			udp_connect(defconptr, udp_packet->ip_hdr.SrcIPAddr,
     					ntohs(udp_packet->udp_hdr.UDPSrcPort));
-    			udp_packet = (struct udp_pkg *) defconptr;
+    			udp_packet = (udp_pkg*) defconptr;
     			udp_packet->udp_hdr.UDPSrcPort = dstport;
     			return ntohs(udp_packet->udp_hdr.Length)
     					- sizeof(struct udp_hdr);
