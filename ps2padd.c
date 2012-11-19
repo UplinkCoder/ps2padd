@@ -96,7 +96,6 @@ void padStopAct(int port, int act)
 int main(int argc, char **argv)
 {	init_scr();
 	iopReset();
-	assert(1);
 	u32 port;
 	struct padButtonStatus buttons;
 	int dualshock[2];

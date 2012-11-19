@@ -2,7 +2,7 @@
 /* Structurs for Packet-Layout */
 #ifndef __STRUCTS_H
 #define __STRUCTS_H
-#include <stdint.h>
+#include "mytypes.h"
 // Magic Numbers & Network stuff
 #define ETH_PROTO_TYPE_ARP 	0x0608
 #define ETH_PROTO_TYPE_IP  	0x0008

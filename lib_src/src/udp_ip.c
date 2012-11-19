@@ -1,5 +1,5 @@
-//#include <string.h>
-//#include <stdlib.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "../include/pktdrv_rpc.h"
 #include "../include/structs.h"
@@ -51,8 +51,9 @@ int net_start(unsigned int IP, unsigned int GW, unsigned int MK) {
     	arp_clean();
     	udp_prefill(IP, ps2_ethaddr); // prefill is in testing
     	return 1;
-    } else
+    } else {
     	return -1;
+	}
 }
 
 int get_packet() {
