@@ -1,0 +1,24 @@
+// New Classed UDP Stack
+
+contains 				Ethernet Class
+					  /       |
+1. Connection Class 		ARP Class
+		|			  \      |
+		Buffer Class	IP - Class
+						\
+						 UDP Class
+						 
+						 
+Only the Connection Class has an exposed Interface
+
+
+Conneecton Class public functoins
+
+open ()
+close()
+send()
+recv()
+
+// sendto ()
+//  recvfrom()
+ 

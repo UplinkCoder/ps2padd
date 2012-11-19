@@ -1,0 +1,7 @@
+
+0.3 analog sticks are supported 
+
+0.2 put network stuff into a proper libary 
+	updated the makefile not useing x-modules saves a 50KiB
+
+0.1 First pre-release appeared
