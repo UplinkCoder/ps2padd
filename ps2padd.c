@@ -1,6 +1,6 @@
 #define debugPrint scr_printf
 
-
+#include <assert.h>
 #include <iopheap.h> 	// something to do with the iop reset
 #include <iopcontrol.h>	// something to do with the iop reset
 #include <kernel.h>		// important!!
@@ -96,12 +96,11 @@ void padStopAct(int port, int act)
 int main(int argc, char **argv)
 {	init_scr();
 	iopReset();
-	assert(1);
 	u32 port;
 	struct padButtonStatus buttons;
 	int dualshock[2];
 	int acts[2];
-	void *connptr;
+	struct udp_pkg* connptr;
 	char *data[16];
 	
 	scr_printf(" - Using PS2SDK free IRX and modded PKTDRV by ps2devman modules -\n");
@@ -114,12 +113,12 @@ int main(int argc, char **argv)
 	scr_printf("PadInit called\n");
 
 	
-	connptr=malloc(42); // size of udp-connecteion-struct
+	assert (new_udpconn(connptr)); // size of udp-connecteion-struct
 	
 	setupNet(connptr);
 	
 	strncpy(data, "Ps2PaD++SRV-PONG", 16);
-	data[16]="\0";
+	
 	udp_send(connptr,data,16);
 
 	scr_printf("WE FUCKING SET UP NETWORK \n");

@@ -1,5 +1,5 @@
 // loadmodule.h
-extern int iopReset();
+extern int iopReset(void);
 #ifdef xmodules
 // XPADMAN IRX
 extern u8* xpadman_irx;

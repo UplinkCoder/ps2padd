@@ -11,7 +11,7 @@
 	memset(tmp,0,42);
 	debugPrint("waiting for Ps2PaD++CLT-PING");
 	udp_recvfrom(tmp,msg,861);
-	msg[16]="\0";
+	
 	client_connected=!strncmp(msg,"Ps2PaD++CLT-PING",16);
 	}
 	debugPrint ("i've got client_ping");

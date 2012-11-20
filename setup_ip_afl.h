@@ -16,7 +16,7 @@ int setup_ip_from_mc(){
 	 
 }
 
-void setup_ip(const char *ipconfig_dat_path)
+int setup_ip(const char *ipconfig_dat_path)
 {
 	int i;
 	int 	lFD;
@@ -52,6 +52,7 @@ void setup_ip(const char *ipconfig_dat_path)
 				debugPrint("MK=%s\n",MK);
 				debugPrint("GW=%s\n",GW);
 				
+				return 1;
 				
 		}
 		else
@@ -62,5 +63,5 @@ void setup_ip(const char *ipconfig_dat_path)
 		debugPrint("Can't find IPCONFIG.DAT on %s \n",ipconfig_dat_path);
 	}
 
-
+	return 0;
 }
