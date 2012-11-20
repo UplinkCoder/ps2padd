@@ -19,7 +19,7 @@ EE_OBJS := $(EE_OBJS:%=$(EE_OBJS_DIR)%)
 
 EE_LIB = $(EE_LIB_DIR)libudp_ip.a
 
-all: $(EE_OBJS_DIR) strip-obj $(EE_LIB_DIR) $(EE_LIB) 
+all: $(EE_OBJS_DIR) $(EE_LIB_DIR) $(EE_LIB) 
 
 strip-obj: 
 	$(EE_STRIP) --strip-unneeded $(EE_OBJS)

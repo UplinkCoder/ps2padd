@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 	struct padButtonStatus buttons;
 	int dualshock[2];
 	int acts[2];
-	void *connptr;
+	struct udp_pkg* connptr;
 	char *data[16];
 	
 	scr_printf(" - Using PS2SDK free IRX and modded PKTDRV by ps2devman modules -\n");
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	padInit(0);
 	scr_printf("PadInit called\n");
 
-	udp_pkg* connptr;
+	
 	assert (new_udpconn(connptr)); // size of udp-connecteion-struct
 	
 	setupNet(connptr);
