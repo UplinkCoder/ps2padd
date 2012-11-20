@@ -13,6 +13,7 @@ unsigned int htonl(unsigned int);
 int arp_lookup(unsigned int ip,union mac mac);
 int arp_insert(unsigned int ip,union mac mac);
 
+int new_udpconn(struct udp_pkg *conn);
 int udp_prefill(unsigned int ps2ip, union mac ps2_ethaddr);
 int udp_connect(struct udp_pkg *defconptr, unsigned int destip,
 	 unsigned short dstport);

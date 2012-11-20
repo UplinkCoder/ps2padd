@@ -183,7 +183,7 @@ int udp_prefill(unsigned int ps2ip, union mac ps2_ethaddr) {
 }
 
 // INTERN
-int new_udpconn (void *ptr) {
+int new_udpconn (udp_pkg *ptr) {
 	ptr = malloc(sizeof(udp_pkg));
 	return (ptr != NULL);
 }
