@@ -1,6 +1,6 @@
 #define debugPrint scr_printf
 
-
+#include <assert.h>
 #include <iopheap.h> 	// something to do with the iop reset
 #include <iopcontrol.h>	// something to do with the iop reset
 #include <kernel.h>		// important!!
@@ -112,8 +112,8 @@ int main(int argc, char **argv)
 	padInit(0);
 	scr_printf("PadInit called\n");
 
-	
-	connptr=malloc(42); // size of udp-connecteion-struct
+	udp_pkg* connptr;
+	assert (new_udpconn(connptr)); // size of udp-connecteion-struct
 	
 	setupNet(connptr);
 	

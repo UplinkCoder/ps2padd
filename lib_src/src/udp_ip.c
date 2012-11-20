@@ -58,7 +58,7 @@ int net_start(unsigned int IP, unsigned int GW, unsigned int MK) {
 	}
 }
 
-int get_packet() {
+int get_packet(void) {
     lastpacketlength = net_receive(recvbuffer);
     if (lastpacketlength)
     	return 1;
@@ -68,7 +68,7 @@ int get_packet() {
 
 /* Functions for processing ethernet header */
 
-short get_eth_type() {
+short get_eth_type(void) {
     struct eth_hdr *eth_pkg;
     short eth_type;
     eth_pkg = (struct eth_hdr *) recvbuffer;
@@ -94,7 +94,7 @@ int arp_handle() {
     
     	arp_packet->eth_hdr.EthDst.mac64 = arp_packet->eth_hdr.EthSrc.mac64; // useing Sender as Dest
         arp_packet->eth_hdr.EthSrc.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64; // myaddr as Src
-    	arp_packet->Operation = 0x200;
+    	arp_packet->Operation = 0x200; // response code
         arp_packet->TargetHardwareAddr.mac64 = arp_packet->SenderHardwareAddr.mac64;
         arp_packet->SenderHardwareAddr.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64;
     	
@@ -183,6 +183,8 @@ int udp_prefill(unsigned int ps2ip, union mac ps2_ethaddr) {
 }
 
 // INTERN
+int new_udpconn (void *ptr)
+ return ( (&ptr = malloc(sizeof(udp_pkg))) != NULL);
 
 /* udp_connect prefills a udp_pkg */
 
