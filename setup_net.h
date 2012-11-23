@@ -2,8 +2,8 @@
 {	int client_connected;
 	struct udp_pkg *tmp;
 	char *msg[16];
-	
-	tmp=malloc(42);
+
+	new_udpconn(tmp);
 
 	client_connected=-1;
 	
