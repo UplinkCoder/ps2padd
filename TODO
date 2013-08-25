@@ -1,0 +1,7 @@
+
+TODO
+
+* Implement Error-Handeling as GetLastError()
+* Modularize libudp_ip
+* Clean all messy Code
+
