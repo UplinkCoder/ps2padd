@@ -1,4 +1,4 @@
-
+#ifdef PS2
 #include <stdio.h>
 #include <kernel.h>
 #include <sifrpc.h>
@@ -160,3 +160,4 @@ int net_rpc_init()
 	return 1;
 }
 
+#endif

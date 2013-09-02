@@ -1,9 +1,9 @@
 // functions-include.h
-unsigned int itol(char*); 
+unsigned int itol(char IP[]); 
 int net_start(unsigned int,unsigned int,unsigned int);
 
-short get_eth_type();
-int get_packet ();
+short get_eth_type(void);
+int get_packet (void);
 
 unsigned short htons(unsigned short);
 unsigned short ntohs(unsigned short);

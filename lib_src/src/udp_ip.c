@@ -46,7 +46,7 @@ unsigned int itol(char* ip) {
 // startup net init PKTDRV&RPC&ARP_TABLE
 
 int net_start(unsigned int IP, unsigned int GW, unsigned int MK) {
-    union mac ps2_ethaddr;
+    Mac ps2_ethaddr;
     
     if (net_rpc_init() && net_init()) {
     	net_getethaddr(ps2_ethaddr.mac8);
@@ -92,11 +92,15 @@ int arp_handle() {
     
     	// build up an ARP response (invert src and dst)
     
-    	arp_packet->eth_hdr.EthDst.mac64 = arp_packet->eth_hdr.EthSrc.mac64; // useing Sender as Dest
-        arp_packet->eth_hdr.EthSrc.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64; // myaddr as Src
+    	maccpy(arp_packet->eth_hdr.EthDst,arp_packet->eth_hdr.EthSrc);
+		//arp_packet->eth_hdr.EthDst.mac64 = arp_packet->eth_hdr.EthSrc.mac64; // useing Sender as Dest
+        maccpy(arp_packet->eth_hdr.EthSrc,udp_pre_pkg->eth_hdr.EthSrc);
+		//arp_packet->eth_hdr.EthSrc.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64; // myaddr as Src
     	arp_packet->Operation = 0x200; // response code
-        arp_packet->TargetHardwareAddr.mac64 = arp_packet->SenderHardwareAddr.mac64;
-        arp_packet->SenderHardwareAddr.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64;
+		maccpy(arp_packet->TargetHardwareAddr,arp_packet->SenderHardwareAddr);
+        //arp_packet->TargetHardwareAddr.mac64 = arp_packet->SenderHardwareAddr.mac64;
+		maccpy(arp_packet->SenderHardwareAddr,udp_pre_pkg->eth_hdr.EthSrc);
+		//arp_packet->SenderHardwareAddr.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64;
     	
     	arp_packet->TargetProtocolAddr = arp_packet->SenderProtocolAddr;
     	arp_packet->SenderProtocolAddr = udp_pre_pkg->ip_hdr.SrcIPAddr;
@@ -113,13 +117,14 @@ int arp_handle() {
 }
 
 // IT WRITES THE MAC INTO THE POINTED ADDR
-int arp_lookup(unsigned int ip, union mac mac) {
+int arp_lookup(unsigned int ip, Mac mac) {
     int i;
     struct arp_entry *tabptr;
     for (i = 0; i <= arp_entry_count; i++) {
     	tabptr = &arp_table[i];
     	if (tabptr->ip == ip) {
-    	mac.mac64 = tabptr->mac.mac64;
+			maccpy(mac,tabptr->mac);
+    	//mac.mac64 = tabptr->mac.mac64;
     		return 1;
     	}
     }
@@ -133,14 +138,15 @@ void arp_clean(void) {
     arp_entry_count = 0;
 }
 
-int arp_insert(unsigned int ip, union mac mac) {
+int arp_insert(unsigned int ip, Mac mac) {
     struct arp_entry *tabptr;
     int rv;
     rv = arp_lookup(ip, mac);
     if (!rv) {
     	if (arp_entry_count <= MAX_ARP_TABLE_SIZE) {
     		tabptr = &arp_table[arp_entry_count];
-    		tabptr->mac.mac64 = mac.mac64;
+    		maccpy(tabptr->mac,mac);
+			//tabptr->mac.mac64 = mac.mac64;
     		tabptr->ip = ip;
     		++arp_entry_count;
     		return 1;
@@ -169,10 +175,11 @@ unsigned int ntohl(unsigned int n) {
     		| ((n & 0xff000000UL) >> 24);
 }
 
-int udp_prefill(unsigned int ps2ip, union mac ps2_ethaddr) {
+int udp_prefill(unsigned int ps2ip, Mac ps2_ethaddr) {
     udp_pre_pkg = (udp_pkg*) malloc(sizeof(udp_pkg));
     //  ETH HDR
-    ps2_ethaddr.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64;
+	maccpy(ps2_ethaddr,udp_pre_pkg->eth_hdr.EthSrc);
+    //ps2_ethaddr.mac64 = udp_pre_pkg->eth_hdr.EthSrc.mac64;
     udp_pre_pkg->eth_hdr.ProtocolType = ETH_PROTO_TYPE_IP;
     // IP HDR
     udp_pre_pkg->ip_hdr.Version = 0x45;

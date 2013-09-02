@@ -25,12 +25,17 @@
 
 union mac {
 	uint8_t mac8[6];
+	uint16_t mac16[3];
+	#ifdef BITFIELDS
 	uint64_t mac64:48;
+	#define mac64
+	#endif
 } __attribute__((packed)); 
+	typedef union mac Mac;
 
  struct eth_hdr { //ethernet header (14 bytes)  
-	union mac	EthDst;		//0xFFFFFFFFFFFF=any (broadcast)
-	union mac 	EthSrc;
+	Mac			EthDst;		//0xFFFFFFFFFFFF=any (broadcast)
+	Mac			EthSrc;
 	uint16_t 	ProtocolType;
 	} __attribute__((packed));
 	
@@ -41,15 +46,15 @@ union mac {
 	uint8_t 	HardwareAddrLen;	//6 (bytes)
 	uint8_t 	ProtocolAddrLen;	//4 (bytes)
 	uint16_t 	Operation;		//0x0100 (0x00 then 0x01)=Request 0x0200=Answer
-	union mac	SenderHardwareAddr; 
+	Mac			SenderHardwareAddr; 
 	uint32_t 	SenderProtocolAddr;	//Sender IP address
-	union mac	TargetHardwareAddr;	//0 if not known yet
+	Mac			TargetHardwareAddr;	//0 if not known yet
 	uint32_t	TargetProtocolAddr;	//Target IP address
 	} __attribute__((packed));
 	
 	
 struct arp_entry { // arp table entry (10 bytes) // you should consider adding time
-	union mac mac;
+	Mac mac;
 	uint32_t	ip;
 	} __attribute__((packed));
 
