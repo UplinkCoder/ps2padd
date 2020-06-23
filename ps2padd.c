@@ -9,7 +9,7 @@
 #include <malloc.h>		// allows for the malloc command
 #include <sbv_patches.h>// patches required to load irxs, from mem
 #include <sifrpc.h>		// something to do with irx files or something
-#include <gs_privileged.h>	
+#include <libgs.h>	
 #include <stdio.h>		// standard input output library
 //#include <fileio.h>		
 #include <tamtypes.h>	// type defines for ps2 stuff
@@ -25,7 +25,7 @@
 
 
 // begin by resetting the iop
-	int iopReset() {
+void iopReset() {
 	scr_printf("IOP-RESET ...");
 	SifIopReset("rom0:UDNL rom0:EELOADCNF",0);
 	while(!SifIopSync());
@@ -35,7 +35,7 @@
 	SifExitCmd();
 	SifInitRpc(0);
 	scr_printf(" DONE \n");
-	}
+}
 		
 	
 
@@ -57,13 +57,13 @@ u8 actDirect[2][6] = { {0,0,0,0,0,0}, {0,0,0,0,0,0}};
 void wait_vsync() 
 {
 	// Enable the vsync interrupt.
-	GS_REG_CSR |= GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+	GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
 	// Wait for the vsync interrupt.
-	while (!(GS_REG_CSR & (GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)))) { }
+	while ((GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0))) { }
 
 	// Disable the vsync interrupt.
-	GS_REG_CSR &= ~GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+	GS_SET_CSR(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void padWait(int port)
@@ -92,16 +92,23 @@ void padStopAct(int port, int act)
 {
 	padStartAct(port, act, 0);
 }
+int new_udpconn (void *ptr); 
+
+udp_send_string(udp_pkg* conn, char* str)
+{
+	const int len = strlen(str);	
+	udp_send(conn,str,len);
+}
 
 int main(int argc, char **argv)
-{	init_scr();
+{
+    init_scr();
 	iopReset();
 	u32 port;
 	struct padButtonStatus buttons;
 	int dualshock[2];
 	int acts[2];
-	struct udp_pkg* connptr;
-	char *data[16];
+	udp_pkg* connptr = 0;
 	
 	scr_printf(" - Using PS2SDK free IRX and modded PKTDRV by ps2devman modules -\n");
 	loadmodules();	
@@ -116,11 +123,9 @@ int main(int argc, char **argv)
 	assert (new_udpconn(connptr)); // size of udp-connecteion-struct
 	
 	setupNet(connptr);
-	
-	strncpy(data, "Ps2PaD++SRV-PONG", 16);
-	
-	udp_send(connptr,data,16);
 
+    udp_send_string(connptr, "Ps2PaD++SRV-PONG");
+	
 	scr_printf("WE FUCKING SET UP NETWORK \n");
 
 	padBuf[0] = memalign(64, 256);

@@ -19,10 +19,6 @@
 
 // again Network Stuff 
 
-
-
-
-
 union mac {
 	uint8_t mac8[6];
 	uint16_t mac16[3];
@@ -31,13 +27,14 @@ union mac {
 	#define mac64
 	#endif
 } __attribute__((packed)); 
-	typedef union mac Mac;
 
- struct eth_hdr { //ethernet header (14 bytes)  
+typedef union mac Mac;
+
+typedef struct eth_hdr { //ethernet header (14 bytes)  
 	Mac			EthDst;		//0xFFFFFFFFFFFF=any (broadcast)
 	Mac			EthSrc;
 	uint16_t 	ProtocolType;
-	} __attribute__((packed));
+	} __attribute__((packed)) eth_hdr;
 	
  struct arp_pkg {//arp header (2+2+1+1+2+6+4+6+4=28 bytes)
 	struct 		eth_hdr eth_hdr;
@@ -97,10 +94,10 @@ struct udp_hdr { //udp header (8 bytes)
 	uint16_t	Checksum;
 	} __attribute__((packed));
 	
-struct udp_pkg { //udp packet 
+typedef struct udp_pkg { //udp packet 
 	struct eth_hdr eth_hdr;
 	struct ip_hdr ip_hdr;
 	struct udp_hdr udp_hdr;
-	} __attribute__((packed));
+	} __attribute__((packed)) udp_pkg;
 
 #endif

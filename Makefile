@@ -13,12 +13,12 @@ XMODULES = 0
 EE_BIN = ps2padd.elf
 EE_LDFLAGS = -L./lib
 ifeq ($(XMODULES),1)
-EE_OBJS = ps2padd.o ps2dev9.o poweroff.o  pktdrv.o graph.o font.o xsio2man.o xpadman.o
+EE_OBJS = ps2padd.o ps2dev9.o poweroff.o  pktdrv.o graph.o font.o xsio2man.o xpadman.o udp_ip.o
 EE_LIBS = -lpatches -lpadx -ludp_ip
 EE_CFLAGS = -I./include -Dxmodules
 else
-EE_OBJS = ps2padd.o ps2dev9.o poweroff.o  pktdrv.o graph.o font.o
-EE_LIBS = -lpatches -lpad -ludp_ip
+EE_OBJS = ps2padd.o ps2dev9.o poweroff.o  pktdrv.o graph.o font.o udp_ip.o
+EE_LIBS = -lpatches -lpad
 EE_CFLAGS = -I./include
 endif
 

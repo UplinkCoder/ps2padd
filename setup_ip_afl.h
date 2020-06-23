@@ -1,32 +1,18 @@
 // setup_ip_afl.h
 
-#include <fileio.h>
 #include <stdlib.h>
 #include "udp_ip.h"
+#include <stdio.h>
 
-char IP[16], MK[16], GW[16];
-int setup_ip_from_mc()
-{
 
-    const char* IPCONFIG_DAT_PATHS[] = {
-        "mc0:/BIDATA-SYSTEM/IPCONFIG.DAT", //japan 
-            "mc0:/BADATA-SYSTEM/IPCONFIG.DAT", //us 
-            "mc0:/BEDATA-SYSTEM/IPCONFIG.DAT", //europe
-            "mc0:/SYS-CONF/IPCONFIG.DAT", // default location(for most programs) 
-            NULL
-    };
-    int ipcfg_ret = -1, i;
-    for (i = 0; ipcfg_ret != 0 && IPCONFIG_DAT_PATHS[i] != NULL; ++i)
-    {
-        ipcfg_ret = setup_ip(IPCONFIG_DAT_PATHS[i]);
-    }
-
-}
+char IP[16];
+char MK[16];
+char GW[16];
 
 int setup_ip(const char* ipconfig_dat_path)
 {
     int i;
-    int lFD;
+    FILE* lFD;
     char lBuff[64];
     char lChr;
 
@@ -35,12 +21,12 @@ int setup_ip(const char* ipconfig_dat_path)
     strcpy(MK, "255.255.255.0");
     strcpy(GW, "192.168.0.1");
 
-    lFD = fioOpen(ipconfig_dat_path, O_RDONLY);
+    lFD = fopen(ipconfig_dat_path, "r+");
     if (lFD >= 0)
     {
         memset(lBuff, 0, sizeof(lBuff));
-        i = fioRead(lFD, lBuff, sizeof(lBuff) - 1);
-        fioClose(lFD);
+        i = fread(lBuff, 1, sizeof(lBuff) - 1, lFD);
+        fclose(lFD);
 
         if (i > 0)
         {
@@ -72,4 +58,22 @@ int setup_ip(const char* ipconfig_dat_path)
     }
 
     return 0;
+}
+
+void setup_ip_from_mc()
+{
+
+    const char* IPCONFIG_DAT_PATHS[] = {
+        "mc0:/BIDATA-SYSTEM/IPCONFIG.DAT", //japan 
+            "mc0:/BADATA-SYSTEM/IPCONFIG.DAT", //us 
+            "mc0:/BEDATA-SYSTEM/IPCONFIG.DAT", //europe
+            "mc0:/SYS-CONF/IPCONFIG.DAT", // default location(for most programs) 
+            NULL
+    };
+    int ipcfg_ret = -1, i;
+    for (i = 0; ipcfg_ret != 0 && IPCONFIG_DAT_PATHS[i] != NULL; ++i)
+    {
+        ipcfg_ret = setup_ip(IPCONFIG_DAT_PATHS[i]);
+    }
+
 }

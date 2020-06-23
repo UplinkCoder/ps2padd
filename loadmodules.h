@@ -1,5 +1,5 @@
 // loadmodule.h
-extern int iopReset(void);
+extern void iopReset(void);
 #ifdef xmodules
 // XPADMAN IRX
 extern u8* xpadman_irx;
@@ -87,5 +87,5 @@ void loadmodules(void)
 	else
 	scr_printf("PADMAN OK!\n");
 #endif 
-	}
-	
+}
+

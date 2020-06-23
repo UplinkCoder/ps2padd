@@ -28,6 +28,6 @@ clean:
 	rm -f -r $(EE_OBJS_DIR) $(EE_LIB_DIR)
 
 
-include $(PS2SDKSRC)/Defs.make
-include $(PS2SDKSRC)/ee/Rules.make
-include $(PS2SDKSRC)/ee/Rules.release
+include $(PS2SDK)/Defs.make
+include $(PS2SDK)/Rules.make
+include $(PS2SDK)/Rules.release
