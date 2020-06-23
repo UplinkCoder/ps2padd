@@ -9,14 +9,14 @@
 #include <malloc.h>		// allows for the malloc command
 #include <sbv_patches.h>// patches required to load irxs, from mem
 #include <sifrpc.h>		// something to do with irx files or something
-#include <graph_registers.h>	
+#include <gs_privileged.h>	
 #include <stdio.h>		// standard input output library
 //#include <fileio.h>		
 #include <tamtypes.h>	// type defines for ps2 stuff
 #include <string.h>		// string functions, memset/strcpy/strcat/etc
 //#include <ps2ip.h>		// networking functions(send/connect/disconnect/close)
 #include <libmc.h>		// library for accessing the memory card
-
+#include <debug.h>
 	// code i merged into sub-functions
 #include "udp_ip.h"
 #include "setup_net.h"

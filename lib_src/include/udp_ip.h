@@ -1,4 +1,6 @@
 // functions-include.h
+#include "structs.h"
+
 unsigned int itol(char IP[]); 
 int net_start(unsigned int,unsigned int,unsigned int);
 
