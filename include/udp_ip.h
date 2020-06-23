@@ -29,16 +29,11 @@ typedef unsigned long long uint64_t;
 
 // again Network Stuff 
 
-union mac {
+typedef union mac {
 	uint8_t mac8[6];
 	uint16_t mac16[3];
-	#ifdef BITFIELDS
 	uint64_t mac64:48;
-	#define mac64
-	#endif
-} __attribute__((packed)); 
-
-typedef union mac Mac;
+} __attribute__((packed)) Mac; 
 
 typedef struct eth_hdr { //ethernet header (14 bytes)  
 	Mac			EthDst;		//0xFFFFFFFFFFFF=any (broadcast)
@@ -57,13 +52,13 @@ struct arp_pkg {//arp header (2+2+1+1+2+6+4+6+4=28 bytes)
     uint32_t 	SenderProtocolAddr;	//Sender IP address
     Mac			TargetHardwareAddr;	//0 if not known yet
     uint32_t	TargetProtocolAddr;	//Target IP address
-} __attribute__((packed));
+} __attribute__((packed)) arp_pkg;
 	
 	
 struct arp_entry { // arp table entry (10 bytes) // you should consider adding time
 	Mac mac;
 	uint32_t	ip;
-	} __attribute__((packed));
+} __attribute__((packed)) arp_entry;
 
 	
  struct ip_hdr { //ip header (20 bytes)
@@ -110,25 +105,30 @@ typedef struct udp_pkg { //udp packet
 	struct udp_hdr udp_hdr;
 } __attribute__((packed)) udp_pkg;
 
-
 // functions-include.h
 unsigned int itol(char*);
+
 int net_start(unsigned int,unsigned int,unsigned int);
-int arp_handle ();
-int arp_insert (unsigned int, unsigned char*);
-int arp_lookup (unsigned int, unsigned char*); // IT WRITES THE MAC INTO THE POINTED ADDR
-void arp_clean ();
+
+int arp_handle (void);
+int arp_insert(unsigned int ip, Mac mac);
+int arp_lookup(unsigned int ip, Mac* mac);
+void arp_clean (void);
+
 short get_eth_type();
 int get_packet ();
+
 unsigned short htons(unsigned short);
 unsigned short ntohs(unsigned short);
 unsigned int ntohl(unsigned int);
 unsigned int htonl(unsigned int);
-int	udp_connect (udp_pkg* , unsigned int, unsigned short);
-int udp_recvfrom (udp_pkg*, void*, unsigned short);
-int udp_recv (udp_pkg*, unsigned short); // does not seem to work donno why
-int udp_sendto(udp_pkg*, unsigned short, unsigned int, unsigned short, 
-													unsigned short);
+
+int udp_prefill(unsigned int ps2ip, Mac ps2_ethaddr);
+int	udp_connect (udp_pkg* , uint32_t ip, uint16_t port);
+int udp_recvfrom(udp_pkg *defconptr, void *databuf, unsigned short dstport);
+int udp_recv(void *databuf, unsigned short dstport);
+int udp_sendto(void *databuf, unsigned short len, unsigned int destip, 
+               unsigned short dstport, unsigned short srcport); 
 int	udp_send (udp_pkg*, void*, unsigned short);
 unsigned short ip_chksum(const unsigned char*);
 
